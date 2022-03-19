@@ -13,14 +13,26 @@
 static void configGPIO();
 static void barGraphDisplay(int ledOn);
 
-const int ledCount = 10; // the number of LEDs in the bar graph
 static int ledPins[] = {19,18,13,21,4,15,12,14,27,26}; // an array of pin numbers to which LEDs are attached
-int length = 0;
+int lengthFromArray = 0;
 
 void app_main(void)
 {
 
 	configGPIO();
+
+	lengthFromArray = sizeof(ledPins) / sizeof(ledPins[0]);
+
+	while(1) {
+		// makes the "i"th LED of LED bar graph bright in turn
+		for (int i = 0; i < lengthFromArray; i++) {
+			barGraphDisplay(i);
+		}
+		// makes the "i"th LED of LED bar graph bright in reverse order
+		for (int i = lengthFromArray; i > 0; i--) {
+			barGraphDisplay(i - 1);
+		}
+	}
 }
 
 static void configGPIO(){
@@ -37,22 +49,11 @@ static void configGPIO(){
 	io_conf.pull_up_en = 0;
 	//configure GPIO with the given settings
 	gpio_config(&io_conf);
-
-	while(1) {
-		// makes the "i"th LED of LED bar graph bright in turn
-		for (int i = 0; i < ledCount; i++) {
-			barGraphDisplay(i);
-		}
-		// makes the "i"th LED of LED bar graph bright in reverse order
-		for (int i = ledCount; i > 0; i--) {
-			barGraphDisplay(i - 1);
-		}
-	}
 }
 
 static void barGraphDisplay(int ledOn) {
 	// make the "ledOn"th LED of bar graph LED on and the others off
-	for (int j = 0; j < ledCount; j++) {
+	for (int j = 0; j < lengthFromArray; j++) {
 		printf("LED: %d is", ledPins[j]);
 		if (j == ledOn){
 			printf(" %d.\n", LOW);
